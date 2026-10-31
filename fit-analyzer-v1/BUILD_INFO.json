@@ -1,0 +1,13 @@
+{
+  "project": "FIT Analyzer",
+  "version": "1.0.0",
+  "python": "3.10+",
+  "runtime_dependencies": [],
+  "modules": [
+    "FIT parser",
+    "cycling analytics",
+    "Intervals.icu API client",
+    "historical period comparison"
+  ],
+  "status": "initial source scaffold; validate against real-world FIT files and live API before release"
+}
