@@ -25,6 +25,21 @@ class FitParserTests(unittest.TestCase):
         self.assertEqual(records[1]["power_w"],200)
         self.assertEqual(records[0]["timestamp"],631065700)
 
+    def test_lap_end_timestamp_uses_start_plus_elapsed_when_fit_end_repeats(self):
+        # Garmin export regression: field_253 can repeat the first lap timestamp.
+        msg = {
+            "field_2": 1_162_335_955,
+            "field_253": 1_162_331_673,
+            "field_7": 802_456,
+        }
+        lap = FitParser._decorate(19, msg)
+        self.assertEqual(lap["start_timestamp"], 631065600 + 1_162_335_955)
+        self.assertAlmostEqual(
+            lap["end_timestamp"],
+            631065600 + 1_162_335_955 + 802.456,
+        )
+        self.assertEqual(lap["end_timestamp_source"], "start_plus_elapsed")
+
     def test_invalid_signature(self):
         with self.assertRaises(FitParseError):
             FitParser().parse(b"not a fit file")

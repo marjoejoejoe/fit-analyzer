@@ -21,6 +21,19 @@ class CyclingAnalyticsTests(unittest.TestCase):
         self.assertEqual(len(result),1)
         self.assertEqual(result[0]["duration_s"],200)
 
+    def test_garmin_laps_are_primary_interval_boundaries(self):
+        messages = [
+            {"global_message": 19, "total_timer_time_s": 750, "total_elapsed_time_s": 750,
+             "avg_power_w": 195, "avg_heart_rate_bpm": 160, "avg_cadence_rpm": 88},
+            {"global_message": 19, "total_timer_time_s": 240, "total_elapsed_time_s": 240,
+             "avg_power_w": 110, "avg_heart_rate_bpm": 130, "avg_cadence_rpm": 85},
+        ]
+        result = analyze_records(messages, ftp=210)
+        self.assertEqual(result["lap_count"], 2)
+        self.assertEqual(result["interval_detection_method"], "garmin_laps")
+        self.assertEqual(len(result["detected_intervals"]), 1)
+        self.assertEqual(result["detected_intervals"][0]["lap_number"], 1)
+
 
 if __name__ == "__main__":
     unittest.main()

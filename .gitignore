@@ -1,0 +1,17 @@
+
+# Python generated files
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# macOS
+.DS_Store
+
+# Local environment
+.venv/
+
+# Personal cycling data
+sample_data/
+*.fit
+*.FIT
+report.json

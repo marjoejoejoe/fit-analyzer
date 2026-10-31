@@ -232,6 +232,32 @@ class FitParser:
             if get(7) is not None: out["power_w"] = get(7)
             if get(13) is not None: out["temperature_c"] = get(13)
             if get(53) is not None: out["fractional_cadence"] = get(53) / 128.0
+        elif global_number == 19:  # lap
+            # FIT lap messages summarize manually marked laps. FIT timestamps
+            # are seconds since 1989-12-31; elapsed/timer values are ms.
+            start = msg.get("field_2")
+            raw_end = msg.get("field_253")
+            elapsed_ms = msg.get("field_7")
+            elapsed_s = elapsed_ms / 1000.0 if elapsed_ms is not None else None
+            out["start_timestamp"] = FIT_EPOCH + start if start is not None else None
+            # Some Garmin FIT exports repeat the first lap timestamp in field 253
+            # on subsequent lap messages. Prefer the lap's start_time + elapsed
+            # duration when it is available; retain the raw end only as fallback.
+            if start is not None and elapsed_s is not None:
+                out["end_timestamp"] = FIT_EPOCH + start + elapsed_s
+                out["end_timestamp_source"] = "start_plus_elapsed"
+            else:
+                out["end_timestamp"] = FIT_EPOCH + raw_end if raw_end is not None else None
+                out["end_timestamp_source"] = "fit_timestamp" if raw_end is not None else None
+            out["total_elapsed_time_s"] = elapsed_s
+            out["total_timer_time_s"] = msg.get("field_8") / 1000.0 if msg.get("field_8") is not None else None
+            out["total_distance_m"] = msg.get("field_9") / 100.0 if msg.get("field_9") is not None else None
+            out["avg_heart_rate_bpm"] = msg.get("field_15")
+            out["max_heart_rate_bpm"] = msg.get("field_16")
+            out["avg_cadence_rpm"] = msg.get("field_17")
+            out["max_cadence_rpm"] = msg.get("field_18")
+            out["avg_power_w"] = msg.get("field_19")
+            out["max_power_w"] = msg.get("field_20")
         elif global_number == 18:  # session
             out["session_start_timestamp"] = msg.get("field_2")
             out["total_elapsed_time_s"] = (

@@ -104,3 +104,27 @@ fit-analyzer/
 - Never hard-code credentials.
 - Local FIT files and Intervals.icu exports are ignored by Git.
 - Revoke and replace an API key if it is accidentally exposed.
+
+## Lap-aware interval analysis (v1.0.2)
+
+The analyzer now reads FIT global-message 19 (lap) summaries and treats Garmin
+lap markers as the primary interval boundaries. Every lap is retained in the
+JSON report; sustained laps within 6–20 minutes and at or above 85% of the
+provided FTP are flagged as `work_candidate`. If no such laps exist, the
+analyzer falls back to automatic record-power detection.
+
+Example:
+
+```bash
+fit-analyzer analyze sample_data/sample.fit --ftp 210 --weight 78 --json-out report.json
+```
+
+The report distinguishes `elapsed_duration_s` from `timer_duration_s` and
+uses FIT session timer duration for the TSS estimate when available. Lap
+classification is a heuristic; review the reported lap table before treating
+it as a definitive workout prescription match.
+
+
+### v1.0.2 timestamp correction
+
+For Garmin lap messages, the analyzer derives the lap end timestamp from `start_time + total_elapsed_time` when both are available. This avoids non-monotonic lap timelines in FIT exports where the lap `timestamp` field repeats an earlier value. The original FIT timestamp remains the fallback when the derived value cannot be calculated.

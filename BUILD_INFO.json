@@ -1,6 +1,6 @@
 {
   "project": "FIT Analyzer",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "python": "3.10+",
   "runtime_dependencies": [],
   "modules": [
@@ -9,5 +9,10 @@
     "Intervals.icu API client",
     "historical period comparison"
   ],
-  "status": "initial source scaffold; validate against real-world FIT files and live API before release"
+  "status": "initial source scaffold; validate against real-world FIT files and live API before release",
+  "changes": [
+    "Correct lap end timestamps using lap start time plus elapsed duration when Garmin field 253 is inconsistent",
+    "Retain FIT timestamp as fallback when elapsed duration or start time is unavailable",
+    "Add regression coverage for repeated lap timestamp values"
+  ]
 }
